@@ -1,6 +1,8 @@
 #ifndef GPA_TURBOEXPANDER_V2_ELEMENT_H
 #define GPA_TURBOEXPANDER_V2_ELEMENT_H
 
+#include <algorithm>
+
 #include "gpaFlowElement.h"
 
 class gpaTurboExpanderV2Element : public gpaFlowElement
@@ -78,6 +80,18 @@ public:
     [[nodiscard]] gpaReal getTurbineEnthalpyChange() const { return m_turbineEnthalpyChange; }
     [[nodiscard]] gpaReal getCompressorFormulaEnthalpyChange() const { return m_compressorFormulaEnthalpyChange; }
     [[nodiscard]] gpaReal getTurbineFormulaEnthalpyChange() const { return m_turbineFormulaEnthalpyChange; }
+    [[nodiscard]] gpaReal getCompressorFormulaPower() const { return m_compressorFormulaPower; }
+    [[nodiscard]] gpaReal getTurbineFormulaPower() const { return m_turbineFormulaPower; }
+    [[nodiscard]] gpaReal getCompressorNominalPower() const
+    {
+        return std::max(0.0, m_nominalCompressorMassFlow) *
+            std::max(0.0, m_compressorEnthalpyChange) * 1000.0;
+    }
+    [[nodiscard]] gpaReal getTurbineNominalPower() const
+    {
+        return std::max(0.0, m_nominalTurbineMassFlow) *
+            std::max(0.0, -m_turbineEnthalpyChange) * 1000.0;
+    }
     [[nodiscard]] gpaReal getCompressorInletEnthalpy() const
     {
         return m_compressorInlet && m_compressorInlet->getStreamMedium()
@@ -154,6 +168,8 @@ private:
     gpaReal m_turbineEnthalpyChange{0.0};
     gpaReal m_compressorFormulaEnthalpyChange{0.0};
     gpaReal m_turbineFormulaEnthalpyChange{0.0};
+    gpaReal m_compressorFormulaPower{0.0};
+    gpaReal m_turbineFormulaPower{0.0};
 };
 
 #endif // GPA_TURBOEXPANDER_V2_ELEMENT_H

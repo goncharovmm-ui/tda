@@ -39,8 +39,8 @@ const gpaParameterInfoVector gpaTurboExpanderV2::m_parameters = {
  realParam("compressor-heat-capacity", "Удельная теплоёмкость газа компрессора, кДж/(кг K)", GPA_MASS_HEAT_CAPACITY_UNIT, false, 2.041),
  realParam("compressor-heat-capacity-ratio", "Показатель адиабаты компрессора", GPA_DIMLESS_UNIT, false, 1.376),
  realParam("compressor-efficiency", "Адиабатический КПД компрессора", GPA_DIMLESS_UNIT, false, 0.808),
- realParam("compressor-enthalpy-change", "Фиксированный прирост энтальпии компрессора, кДж/кг", GPA_MASS_ENERGY_UNIT, false, 53.056029),
- realParam("turbine-enthalpy-change", "Фиксированное изменение энтальпии детандера, кДж/кг", GPA_MASS_ENERGY_UNIT, false, -157.842288),
+ realParam("compressor-enthalpy-change", "Номинальный прирост энтальпии компрессора, кДж/кг", GPA_MASS_ENERGY_UNIT, false, 46.495702),
+ realParam("turbine-enthalpy-change", "Номинальное изменение энтальпии детандера, кДж/кг", GPA_MASS_ENERGY_UNIT, false, -67.282212),
  realParam("turbine-speed-factor", "Поправка карты детандера по частоте", GPA_DIMLESS_UNIT, false, 0.10),
  realParam("nominal-shaft-torque", "Номинальный момент общего вала, Н м", GPA_DIMLESS_UNIT, false, 5800),
  realParam("bearing-loss-zeta", "Потери в подшипниках", GPA_DIMLESS_UNIT, false, 0.004),
@@ -66,6 +66,10 @@ const gpaSensorInfoVector gpaTurboExpanderV2::m_sensors = {
  scalarSensor("turbine-enthalpy-formula", "Изменение энтальпии детандера по формуле, кДж/кг", GPA_MASS_ENERGY_UNIT),
  scalarSensor("compressor-enthalpy-deviation", "Отклонение формулы от константы компрессора, кДж/кг", GPA_MASS_ENERGY_UNIT),
  scalarSensor("turbine-enthalpy-deviation", "Отклонение формулы от константы детандера, кДж/кг", GPA_MASS_ENERGY_UNIT),
+ scalarSensor("compressor-formula-power", "Мощность компрессора по расчётному Δh, кВт", GPA_HEAT_RATE_UNIT),
+ scalarSensor("turbine-formula-power", "Мощность детандера по расчётному Δh, кВт", GPA_HEAT_RATE_UNIT),
+ scalarSensor("compressor-power-to-nominal", "Отношение мощности компрессора к номинальной", GPA_DIMLESS_UNIT),
+ scalarSensor("turbine-power-to-nominal", "Отношение мощности детандера к номинальной", GPA_DIMLESS_UNIT),
  scalarSensor("compressor-inlet-enthalpy", "Энтальпия на входе компрессора, кДж/кмоль", GPA_MOLAR_ENERGY_UNIT),
  scalarSensor("compressor-outlet-enthalpy", "Энтальпия на выходе компрессора, кДж/кмоль", GPA_MOLAR_ENERGY_UNIT),
  scalarSensor("turbine-inlet-enthalpy", "Энтальпия на входе детандера, кДж/кмоль", GPA_MOLAR_ENERGY_UNIT),
@@ -99,12 +103,18 @@ gpaResult gpaTurboExpanderV2::calcSensors(gpaVector& s) const
     setSensorValue(s, 15, m_element.getTurbineFormulaEnthalpyChange());
     setSensorValue(s, 16, m_element.getCompressorFormulaEnthalpyChange() - m_element.getCompressorEnthalpyChange());
     setSensorValue(s, 17, m_element.getTurbineFormulaEnthalpyChange() - m_element.getTurbineEnthalpyChange());
-    setSensorValue(s, 18, m_element.getCompressorInletEnthalpy());
-    setSensorValue(s, 19, m_element.getCompressorOutletEnthalpy());
-    setSensorValue(s, 20, m_element.getTurbineInletEnthalpy());
-    setSensorValue(s, 21, m_element.getTurbineOutletEnthalpy());
-    setSensorValue(s, 22, m_element.getTurbineValveOpening());
-    setSensorValue(s, 23, m_element.getCompressorValveOpening());
+    setSensorValue(s, 18, m_element.getCompressorFormulaPower() / 1000);
+    setSensorValue(s, 19, m_element.getTurbineFormulaPower() / 1000);
+    setSensorValue(s, 20, m_element.getCompressorPower() /
+        std::max(1.0, m_element.getCompressorNominalPower()));
+    setSensorValue(s, 21, m_element.getTurbinePower() /
+        std::max(1.0, m_element.getTurbineNominalPower()));
+    setSensorValue(s, 22, m_element.getCompressorInletEnthalpy());
+    setSensorValue(s, 23, m_element.getCompressorOutletEnthalpy());
+    setSensorValue(s, 24, m_element.getTurbineInletEnthalpy());
+    setSensorValue(s, 25, m_element.getTurbineOutletEnthalpy());
+    setSensorValue(s, 26, m_element.getTurbineValveOpening());
+    setSensorValue(s, 27, m_element.getCompressorValveOpening());
 
     return GPA_RESULT_OK;
 }

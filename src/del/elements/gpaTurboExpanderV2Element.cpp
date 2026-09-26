@@ -195,6 +195,14 @@ gpaResult gpaTurboExpanderV2Element::calcFuncValues(const gpaConstVector&, const
         std::max(0.0, m_compressorEnthalpyChange) * kilopascalToPascal;
     m_turbinePower = positiveTurbineMassFlow *
         std::max(0.0, -m_turbineEnthalpyChange) * kilopascalToPascal;
+    // These diagnostic powers use the same solved mass flow as the working
+    // model, but the pressure-ratio correlations for Delta h.  They make the
+    // calibration error visible without feeding it back into PH flashes or
+    // into the shaft dynamics.
+    m_compressorFormulaPower = positiveCompressorMassFlow *
+        std::max(0.0, m_compressorFormulaEnthalpyChange) * kilopascalToPascal;
+    m_turbineFormulaPower = positiveTurbineMassFlow *
+        std::max(0.0, -m_turbineFormulaEnthalpyChange) * kilopascalToPascal;
     // The shaft load must follow the actual gas work, not an independent N^2
     // curve. At standstill P / omega is singular; using the nominal angular
     // speed as a lower bound preserves a finite starting torque. Above the
