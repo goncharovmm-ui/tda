@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="test">
+  <solver max_iterations="10" max_relative_error="0.01" max_abs_error="0.0001" />
+  <scheme>
+    <mixtypes>
+      <mixtype id="0" lib_name="msuvtpr" state="twophase"><component id="0" name="N2" /><component id="1" name="CH4" /></mixtype>
+      <mixtype id="1" lib_name="msuvtpr" state="twophase"><component id="0" name="N2" /><component id="1" name="CH4" /></mixtype>
+    </mixtypes>
+    <elements>
+      <element id="0" name="element" type="perm-devices[turbo-expander-v2]" shaft-inertia="300" nominal-speed="10560" initial-speed="10560" nominal-compressor-mass-flow="137.26" nominal-turbine-mass-flow="95.85" nominal-compressor-head="741" nominal-turbine-pressure-drop="5046" compressor-head-coefficient="1" compressor-resistance-zeta="0" compressor-valve-zeta="1" compressor-valve-flow-area="0.027" compressor-valve-time-constant="2" turbine-resistance-zeta="0" turbine-valve-zeta="1" turbine-valve-flow-area="0.010" turbine-valve-time-constant="2" turbine-back-pressure="2944" turbine-temperature="263.91" turbine-heat-capacity="2.041" turbine-heat-capacity-ratio="1.70" turbine-efficiency="0.866" compressor-heat-capacity="2.041" compressor-heat-capacity-ratio="1.376" compressor-efficiency="0.808" compressor-enthalpy-change="53.056029" turbine-enthalpy-change="-157.842288" turbine-speed-factor="0.10" nominal-shaft-torque="5800" bearing-loss-zeta="0.004" windage-loss-zeta="0.0064" turbine-valve-opening="1.0" compressor-valve-opening="1" />
+      <element id="1" name="boundary1" type="native[boundary-condition]">
+        <submodel type="hydraulic[pressure]" value="2595" in-dir="true" />
+        <submodel type="thermal[temperature]" value="20" />
+        <submodel type="composition[molar]" fractions="[0.02;0.98]" />
+      </element>
+      <element id="2" name="boundary2" type="native[boundary-condition]">
+        <submodel type="hydraulic[pressure]" value="3336" in-dir="false" />
+        <submodel type="thermal[temperature]" value="20" />
+        <submodel type="composition[molar]" fractions="[0.02;0.98]" />
+      </element>
+      <element id="3" name="boundary3" type="native[boundary-condition]">
+        <submodel type="hydraulic[pressure]" value="7990" in-dir="true" />
+        <submodel type="thermal[temperature]" value="20" />
+        <submodel type="composition[molar]" fractions="[0.02;0.98]" />
+      </element>
+      <element id="4" name="boundary4" type="native[boundary-condition]">
+        <submodel type="hydraulic[pressure]" value="2944" in-dir="false" />
+        <submodel type="thermal[temperature]" value="20" />
+        <submodel type="composition[molar]" fractions="[0.02;0.98]" />
+      </element>
+    </elements>
+    <contours>
+      <contour id="0" name="contour 0" mixtype="0" pressure="2595" temperature="20" fractions="[0.02;0.98]">
+        <stream id="0" from="boundary1[0]" to="element[0:0]" />
+        <stream id="1" from="element[0:1]" to="boundary2[0]" />
+      </contour>
+      <contour id="1" name="contour 1" mixtype="1" pressure="7990" temperature="20" fractions="[0.02;0.98]">
+        <stream id="2" from="boundary3[0]" to="element[1:0]" />
+        <stream id="3" from="element[1:1]" to="boundary4[0]" />
+      </contour>
+    </contours>
+  </scheme>
+  <signals />
+  <sensors />
+</project>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="turbo-expander-v2-signals-open-close">
+  <solver max_iterations="20" max_relative_error="0.01" max_abs_error="0.0001" />
+  <scheme>
+    <mixtypes>
+      <mixtype id="0" lib_name="msuvtpr" state="twophase"><component id="0" name="N2" /><component id="1" name="CH4" /></mixtype>
+      <mixtype id="1" lib_name="msuvtpr" state="twophase"><component id="0" name="N2" /><component id="1" name="CH4" /></mixtype>
+    </mixtypes>
+    <elements>
+      <element id="0" name="element" type="perm-devices[turbo-expander-v2]" shaft-inertia="300" nominal-speed="10560" initial-speed="0" nominal-compressor-mass-flow="137.26" nominal-turbine-mass-flow="95.85" nominal-compressor-head="741" nominal-turbine-pressure-drop="5046" compressor-head-coefficient="1" compressor-resistance-zeta="0" compressor-valve-zeta="1" compressor-valve-flow-area="0.027" compressor-valve-time-constant="2" turbine-resistance-zeta="0" turbine-valve-zeta="1" turbine-valve-flow-area="0.010" turbine-valve-time-constant="2" turbine-back-pressure="2944" turbine-temperature="263.91" turbine-heat-capacity="2.041" turbine-heat-capacity-ratio="1.70" turbine-efficiency="0.866" compressor-heat-capacity="2.041" compressor-heat-capacity-ratio="1.376" compressor-efficiency="0.808" compressor-enthalpy-change="53.056029" turbine-enthalpy-change="-157.842288" turbine-speed-factor="0.10" nominal-shaft-torque="5800" bearing-loss-zeta="0.004" windage-loss-zeta="0.0064" turbine-valve-opening="0" compressor-valve-opening="1" />
+      <element id="1" name="compressor-inlet" type="native[boundary-condition]"><submodel type="hydraulic[pressure]" value="2595" in-dir="true" /><submodel type="thermal[temperature]" value="22.48" /><submodel type="composition[molar]" fractions="[0.02;0.98]" /></element>
+      <element id="2" name="compressor-outlet" type="native[boundary-condition]"><submodel type="hydraulic[pressure]" value="2595" in-dir="false" /><submodel type="thermal[temperature]" value="22.48" /><submodel type="composition[molar]" fractions="[0.02;0.98]" /></element>
+      <element id="3" name="turbine-inlet" type="native[boundary-condition]"><submodel type="hydraulic[pressure]" value="8500" in-dir="true" /><submodel type="thermal[temperature]" value="-9.24" /><submodel type="composition[molar]" fractions="[0.02;0.98]" /></element>
+      <element id="4" name="turbine-outlet" type="native[boundary-condition]"><submodel type="hydraulic[pressure]" value="2944" in-dir="false" /><submodel type="thermal[temperature]" value="-9.24" /><submodel type="composition[molar]" fractions="[0.02;0.98]" /></element>
+    </elements>
+    <contours>
+      <contour id="0" name="compressor" mixtype="0" pressure="2595" temperature="22.48" fractions="[0.02;0.98]"><stream id="0" from="compressor-inlet[0]" to="element[0:0]" /><stream id="1" from="element[0:1]" to="compressor-outlet[0]" /></contour>
+      <contour id="1" name="turbine" mixtype="1" pressure="8500" temperature="-9.24" fractions="[0.02;0.98]"><stream id="2" from="turbine-inlet[0]" to="element[1:0]" /><stream id="3" from="element[1:1]" to="turbine-outlet[0]" /></contour>
+    </contours>
+  </scheme>
+  <signals><signal id="0" element="element" control="turbine-valve-opening" /><signal id="1" element="element" control="compressor-valve-opening" /></signals>
+  <sensors>
+    <sensor type="element" element="element" monitor="rotation-speed" />
+    <sensor type="element" element="element" monitor="turbine-mass-flow" />
+    <sensor type="element" element="element" monitor="turbine-stage-inlet-pressure" />
+    <sensor type="element" element="element" monitor="compressor-mass-flow" />
+    <sensor type="element" element="element" monitor="compressor-discharge-pressure" />
+    <sensor type="element" element="element" monitor="compressor-outlet-pressure" />
+    <sensor type="element" element="element" monitor="turbine-torque" />
+    <sensor type="element" element="element" monitor="compressor-torque" />
+    <sensor type="element" element="element" monitor="loss-torque" />
+    <sensor type="element" element="element" monitor="shaft-acceleration" />
+    <sensor type="element" element="element" monitor="compressor-enthalpy-change" />
+    <sensor type="element" element="element" monitor="turbine-enthalpy-change" />
+    <sensor type="element" element="element" monitor="compressor-enthalpy-formula" />
+    <sensor type="element" element="element" monitor="turbine-enthalpy-formula" />
+    <sensor type="element" element="element" monitor="compressor-enthalpy-deviation" />
+    <sensor type="element" element="element" monitor="turbine-enthalpy-deviation" />
+    <sensor type="element" element="element" monitor="turbine-valve-opening" />
+    <sensor type="element" element="element" monitor="compressor-valve-opening" />
+  </sensors>
+</project>

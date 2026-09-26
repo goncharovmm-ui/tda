@@ -1,0 +1,52 @@
+{
+  "Name": "turbo-expander-v2: открытие и закрытие клапана",
+  "MaxTicks": 400,
+  "Submodels": [],
+  "Parameters": [
+    {
+      "Name": "turbine-valve-opening",
+      "Description": "Открытие клапана детандера",
+      "Unit": 1,
+      "UnitString": "",
+      "DataType": 3,
+      "IsVector": false,
+      "IsMixFractions": false,
+      "IsSignal": true,
+      "SelectedSignalColumn": "turbine-valve-opening",
+      "StringValue": "0",
+      "BoolValue": null,
+      "Value": 0,
+      "VectorAdditionalParam0": 1,
+      "VectorAdditionalParam1": 1,
+      "SizeType0": 1,
+      "SizeType1": 1,
+      "ColumnsCount": 0,
+      "VectorItems": null,
+      "SumValue": null
+    },
+    {
+      "Name": "compressor-valve-opening",
+      "Description": "Открытие клапана компрессора",
+      "Unit": 1,
+      "UnitString": "",
+      "DataType": 3,
+      "IsVector": false,
+      "IsMixFractions": false,
+      "IsSignal": true,
+      "SelectedSignalColumn": "compressor-valve-opening",
+      "StringValue": "1",
+      "BoolValue": null,
+      "Value": 1,
+      "VectorAdditionalParam0": 1,
+      "VectorAdditionalParam1": 1,
+      "SizeType0": 1,
+      "SizeType1": 1,
+      "ColumnsCount": 0,
+      "VectorItems": null,
+      "SumValue": null
+    }
+  ],
+  "Contours": [],
+  "ExpectedResults": [],
+  "ExpectedResultTick": 400
+}
