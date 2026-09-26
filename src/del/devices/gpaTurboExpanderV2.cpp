@@ -39,8 +39,8 @@ const gpaParameterInfoVector gpaTurboExpanderV2::m_parameters = {
  realParam("compressor-heat-capacity", "Удельная теплоёмкость газа компрессора, кДж/(кг K)", GPA_MASS_HEAT_CAPACITY_UNIT, false, 2.041),
  realParam("compressor-heat-capacity-ratio", "Показатель адиабаты компрессора", GPA_DIMLESS_UNIT, false, 1.376),
  realParam("compressor-efficiency", "Адиабатический КПД компрессора", GPA_DIMLESS_UNIT, false, 0.808),
- realParam("compressor-enthalpy-change", "Фиксированный прирост энтальпии компрессора, кДж/кг", GPA_DIMLESS_UNIT, false, 53.056029),
- realParam("turbine-enthalpy-change", "Фиксированное изменение энтальпии детандера, кДж/кг", GPA_DIMLESS_UNIT, false, -157.842288),
+ realParam("compressor-enthalpy-change", "Фиксированный прирост энтальпии компрессора, кДж/кг", GPA_MASS_ENERGY_UNIT, false, 53.056029),
+ realParam("turbine-enthalpy-change", "Фиксированное изменение энтальпии детандера, кДж/кг", GPA_MASS_ENERGY_UNIT, false, -157.842288),
  realParam("turbine-speed-factor", "Поправка карты детандера по частоте", GPA_DIMLESS_UNIT, false, 0.10),
  realParam("nominal-shaft-torque", "Номинальный момент общего вала, Н м", GPA_DIMLESS_UNIT, false, 5800),
  realParam("bearing-loss-zeta", "Потери в подшипниках", GPA_DIMLESS_UNIT, false, 0.004),
@@ -60,12 +60,16 @@ const gpaSensorInfoVector gpaTurboExpanderV2::m_sensors = {
  scalarSensor("turbine-torque", "Момент детандера, Н·м", GPA_DIMLESS_UNIT),
  scalarSensor("compressor-torque", "Момент компрессора, Н·м", GPA_DIMLESS_UNIT),
  scalarSensor("shaft-acceleration", "Ускорение вала, об/(мин·с)", GPA_DIMLESS_UNIT),
- scalarSensor("compressor-enthalpy-change", "Прирост энтальпии в компрессоре, кДж/кг", GPA_DIMLESS_UNIT),
- scalarSensor("turbine-enthalpy-change", "Изменение энтальпии в детандере, кДж/кг", GPA_DIMLESS_UNIT),
- scalarSensor("compressor-enthalpy-formula", "Прирост энтальпии компрессора по формуле, кДж/кг", GPA_DIMLESS_UNIT),
- scalarSensor("turbine-enthalpy-formula", "Изменение энтальпии детандера по формуле, кДж/кг", GPA_DIMLESS_UNIT),
- scalarSensor("compressor-enthalpy-deviation", "Отклонение формулы от константы компрессора, кДж/кг", GPA_DIMLESS_UNIT),
- scalarSensor("turbine-enthalpy-deviation", "Отклонение формулы от константы детандера, кДж/кг", GPA_DIMLESS_UNIT),
+ scalarSensor("compressor-enthalpy-change", "Прирост энтальпии в компрессоре, кДж/кг", GPA_MASS_ENERGY_UNIT),
+ scalarSensor("turbine-enthalpy-change", "Изменение энтальпии в детандере, кДж/кг", GPA_MASS_ENERGY_UNIT),
+ scalarSensor("compressor-enthalpy-formula", "Прирост энтальпии компрессора по формуле, кДж/кг", GPA_MASS_ENERGY_UNIT),
+ scalarSensor("turbine-enthalpy-formula", "Изменение энтальпии детандера по формуле, кДж/кг", GPA_MASS_ENERGY_UNIT),
+ scalarSensor("compressor-enthalpy-deviation", "Отклонение формулы от константы компрессора, кДж/кг", GPA_MASS_ENERGY_UNIT),
+ scalarSensor("turbine-enthalpy-deviation", "Отклонение формулы от константы детандера, кДж/кг", GPA_MASS_ENERGY_UNIT),
+ scalarSensor("compressor-inlet-enthalpy", "Энтальпия на входе компрессора, кДж/кмоль", GPA_MOLAR_ENERGY_UNIT),
+ scalarSensor("compressor-outlet-enthalpy", "Энтальпия на выходе компрессора, кДж/кмоль", GPA_MOLAR_ENERGY_UNIT),
+ scalarSensor("turbine-inlet-enthalpy", "Энтальпия на входе детандера, кДж/кмоль", GPA_MOLAR_ENERGY_UNIT),
+ scalarSensor("turbine-outlet-enthalpy", "Энтальпия на выходе детандера, кДж/кмоль", GPA_MOLAR_ENERGY_UNIT),
  scalarSensor("turbine-valve-opening", "Фактическое открытие клапана детандера", GPA_DIMLESS_UNIT),
  scalarSensor("compressor-valve-opening", "Фактическое открытие клапана компрессора", GPA_DIMLESS_UNIT)};
 gpaTurboExpanderV2::gpaTurboExpanderV2(const gpaCoreInterfaces* i, gpaCoreReference r) : gpaExportSystem(i, r), m_element(asParent()) {}
@@ -73,6 +77,36 @@ gpaResult gpaTurboExpanderV2::checkParameterValues(const gpaParameterValueVector
 gpaResult gpaTurboExpanderV2::setParameterValues(const gpaParameterValueVector& p, bool check) { if(check){auto r=checkParameterValues(p);if(r!=GPA_RESULT_OK)return r;} m_element.setShaftInertia(p[shaftInertia].getReal());m_element.setNominalSpeed(p[nominalSpeed].getReal());m_element.setInitialSpeed(p[initialSpeed].getReal());m_element.setNominalCompressorMassFlow(p[nominalCompressorMassFlow].getReal());m_element.setNominalTurbineMassFlow(p[nominalTurbineMassFlow].getReal());m_element.setNominalCompressorHead(p[nominalCompressorHead].getReal());m_element.setNominalTurbinePressureDrop(p[nominalTurbinePressureDrop].getReal());m_element.setCompressorHeadCoefficient(p[compressorHeadCoefficient].getReal());m_element.setCompressorResistanceZeta(p[compressorResistanceZeta].getReal());m_element.setCompressorValveZeta(p[compressorValveZeta].getReal());m_element.setCompressorValveFlowArea(p[compressorValveFlowArea].getReal());m_element.setCompressorValveTimeConstant(p[compressorValveTimeConstant].getReal());m_element.setTurbineResistanceZeta(p[turbineResistanceZeta].getReal());m_element.setTurbineValveZeta(p[turbineValveZeta].getReal());m_element.setTurbineValveFlowArea(p[turbineValveFlowArea].getReal());m_element.setTurbineValveTimeConstant(p[turbineValveTimeConstant].getReal());m_element.setTurbineBackPressure(p[turbineBackPressure].getReal());m_element.setTurbineTemperature(p[turbineTemperature].getReal());m_element.setTurbineHeatCapacity(p[turbineHeatCapacity].getReal());m_element.setTurbineHeatCapacityRatio(p[turbineHeatCapacityRatio].getReal());m_element.setTurbineEfficiency(p[turbineEfficiency].getReal());m_element.setCompressorHeatCapacity(p[compressorHeatCapacity].getReal());m_element.setCompressorHeatCapacityRatio(p[compressorHeatCapacityRatio].getReal());m_element.setCompressorEfficiency(p[compressorEfficiency].getReal());m_element.setCompressorEnthalpyChange(p[compressorEnthalpyChange].getReal());m_element.setTurbineEnthalpyChange(p[turbineEnthalpyChange].getReal());m_element.setTurbineSpeedFactor(p[turbineSpeedFactor].getReal());m_element.setNominalShaftTorque(p[nominalShaftTorque].getReal());m_element.setBearingLossZeta(p[bearingLossZeta].getReal());m_element.setWindageLossZeta(p[windageLossZeta].getReal());m_element.setValveOpening(p[turbineValveOpening].getReal());m_element.setCompressorValveOpening(p[compressorValveOpening].getReal());return GPA_RESULT_OK; }
 gpaResult gpaTurboExpanderV2::setSignals(const gpaConstVector& s) { gpaReal value{NAN}; if(getSignalValue(s,turbineValveOpening,value)){ if(!std::isfinite(value)) return GPA_ERROR_WRONG_ARGS; m_element.setValveOpening(value); } if(getSignalValue(s,compressorValveOpening,value)){ if(!std::isfinite(value)) return GPA_ERROR_WRONG_ARGS; m_element.setCompressorValveOpening(value); } return GPA_RESULT_OK; }
 gpaResult gpaTurboExpanderV2::initialize(){ const gpaResult linkResult=linkToCoreStreams(); if(linkResult!=GPA_RESULT_OK)return linkResult; bool ok=true; for(gpaUInt c=0;c<2;++c){ok=ok&&m_element.connectMixStream(c,0,getEdgeMixStream(c,0),GPA_STREAM_INLET);ok=ok&&m_element.connectMixStream(c,1,getEdgeMixStream(c,1),GPA_STREAM_OUTLET);} if(!ok)return GPA_ERROR_WRONG_ARGS;setElements({&m_element});setStreams({});if(!createSimStructures({}, {getOuterEntrance(0,0),getOuterEntrance(1,0)}))return GPA_ERROR_WRONG_ARGS;return gpaExportSystem::initialize(); }
-gpaResult gpaTurboExpanderV2::calcSensors(gpaVector& s) const { if(s.size()<m_sensors.size())return GPA_ERROR_WRONG_ARGS; setSensorValue(s,0,m_element.getSpeed());setSensorValue(s,1,m_element.getCompressorPower()/1000);setSensorValue(s,2,m_element.getTurbinePower()/1000);setSensorValue(s,3,m_element.getLossTorque());setSensorValue(s,4,m_element.getTurbineMassFlow());setSensorValue(s,5,m_element.getTurbineStageInletPressure());setSensorValue(s,6,m_element.getCompressorMassFlow());setSensorValue(s,7,m_element.getCompressorDischargePressure());setSensorValue(s,8,m_element.getCompressorOutletPressure());setSensorValue(s,9,m_element.getTurbineTorque());setSensorValue(s,10,m_element.getCompressorTorque());setSensorValue(s,11,m_element.getShaftAcceleration());setSensorValue(s,12,m_element.getCompressorEnthalpyChange());setSensorValue(s,13,m_element.getTurbineEnthalpyChange());setSensorValue(s,14,m_element.getCompressorFormulaEnthalpyChange());setSensorValue(s,15,m_element.getTurbineFormulaEnthalpyChange());setSensorValue(s,16,m_element.getCompressorFormulaEnthalpyChange()-m_element.getCompressorEnthalpyChange());setSensorValue(s,17,m_element.getTurbineFormulaEnthalpyChange()-m_element.getTurbineEnthalpyChange());setSensorValue(s,18,m_element.getTurbineValveOpening());setSensorValue(s,19,m_element.getCompressorValveOpening());return GPA_RESULT_OK; }
+gpaResult gpaTurboExpanderV2::calcSensors(gpaVector& s) const
+{
+    if (s.size() < m_sensors.size())
+        return GPA_ERROR_WRONG_ARGS;
+    setSensorValue(s, 0, m_element.getSpeed());
+    setSensorValue(s, 1, m_element.getCompressorPower() / 1000);
+    setSensorValue(s, 2, m_element.getTurbinePower() / 1000);
+    setSensorValue(s, 3, m_element.getLossTorque());
+    setSensorValue(s, 4, m_element.getTurbineMassFlow());
+    setSensorValue(s, 5, m_element.getTurbineStageInletPressure());
+    setSensorValue(s, 6, m_element.getCompressorMassFlow());
+    setSensorValue(s, 7, m_element.getCompressorDischargePressure());
+    setSensorValue(s, 8, m_element.getCompressorOutletPressure());
+    setSensorValue(s, 9, m_element.getTurbineTorque());
+    setSensorValue(s, 10, m_element.getCompressorTorque());
+    setSensorValue(s, 11, m_element.getShaftAcceleration());
+    setSensorValue(s, 12, m_element.getCompressorEnthalpyChange());
+    setSensorValue(s, 13, m_element.getTurbineEnthalpyChange());
+    setSensorValue(s, 14, m_element.getCompressorFormulaEnthalpyChange());
+    setSensorValue(s, 15, m_element.getTurbineFormulaEnthalpyChange());
+    setSensorValue(s, 16, m_element.getCompressorFormulaEnthalpyChange() - m_element.getCompressorEnthalpyChange());
+    setSensorValue(s, 17, m_element.getTurbineFormulaEnthalpyChange() - m_element.getTurbineEnthalpyChange());
+    setSensorValue(s, 18, m_element.getCompressorInletEnthalpy());
+    setSensorValue(s, 19, m_element.getCompressorOutletEnthalpy());
+    setSensorValue(s, 20, m_element.getTurbineInletEnthalpy());
+    setSensorValue(s, 21, m_element.getTurbineOutletEnthalpy());
+    setSensorValue(s, 22, m_element.getTurbineValveOpening());
+    setSensorValue(s, 23, m_element.getCompressorValveOpening());
+
+    return GPA_RESULT_OK;
+}
 const gpaString* gpaTurboExpanderV2::getMixCircuitName(gpaUInt i) const{return i<2?&m_circuitNames[i]:nullptr;}
 const gpaString* gpaTurboExpanderV2::getMixPortName(gpaUInt c,gpaUInt p) const{return c<2&&p<2?&m_portNames[c*2+p]:nullptr;}

@@ -78,6 +78,26 @@ public:
     [[nodiscard]] gpaReal getTurbineEnthalpyChange() const { return m_turbineEnthalpyChange; }
     [[nodiscard]] gpaReal getCompressorFormulaEnthalpyChange() const { return m_compressorFormulaEnthalpyChange; }
     [[nodiscard]] gpaReal getTurbineFormulaEnthalpyChange() const { return m_turbineFormulaEnthalpyChange; }
+    [[nodiscard]] gpaReal getCompressorInletEnthalpy() const
+    {
+        return m_compressorInlet && m_compressorInlet->getStreamMedium()
+            ? m_compressorInlet->getStreamMedium()->getEnthalpy() : 0.0;
+    }
+    [[nodiscard]] gpaReal getCompressorOutletEnthalpy() const
+    {
+        return m_compressorOutlet && m_compressorOutlet->getStreamMedium()
+            ? m_compressorOutlet->getStreamMedium()->getEnthalpy() : 0.0;
+    }
+    [[nodiscard]] gpaReal getTurbineInletEnthalpy() const
+    {
+        return m_turbineInlet && m_turbineInlet->getStreamMedium()
+            ? m_turbineInlet->getStreamMedium()->getEnthalpy() : 0.0;
+    }
+    [[nodiscard]] gpaReal getTurbineOutletEnthalpy() const
+    {
+        return m_turbineOutlet && m_turbineOutlet->getStreamMedium()
+            ? m_turbineOutlet->getStreamMedium()->getEnthalpy() : 0.0;
+    }
     [[nodiscard]] gpaReal getTurbineValveOpening() const { return m_currentTurbineValveOpening; }
     [[nodiscard]] gpaReal getCompressorValveOpening() const { return m_currentCompressorValveOpening; }
 

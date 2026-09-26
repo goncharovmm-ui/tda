@@ -36,6 +36,10 @@
     <sensor type="element" element="element" monitor="turbine-enthalpy-formula" />
     <sensor type="element" element="element" monitor="compressor-enthalpy-deviation" />
     <sensor type="element" element="element" monitor="turbine-enthalpy-deviation" />
+    <sensor type="element" element="element" monitor="compressor-inlet-enthalpy" />
+    <sensor type="element" element="element" monitor="compressor-outlet-enthalpy" />
+    <sensor type="element" element="element" monitor="turbine-inlet-enthalpy" />
+    <sensor type="element" element="element" monitor="turbine-outlet-enthalpy" />
     <sensor type="element" element="element" monitor="turbine-valve-opening" />
     <sensor type="element" element="element" monitor="compressor-valve-opening" />
   </sensors>
