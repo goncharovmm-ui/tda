@@ -185,15 +185,16 @@ gpaResult gpaTurboExpanderV2Element::calcFuncValues(const gpaConstVector&, const
         std::max(1.0e-6, m_compressorEfficiency);
     const gpaReal positiveCompressorMassFlow = std::max(0.0, m_compressorMassFlow);
     const gpaReal positiveTurbineMassFlow = std::max(0.0, m_turbineMassFlow);
-    // The thermodynamic correlations define the working enthalpy increments.
-    // Passport values stay available as calibration references, but must not
-    // impose a fixed outlet temperature when the pressure ratio changes.
+    // The P-P model transports the prescribed, passport enthalpy changes.
+    // The correlations remain diagnostics: they are useful for calibration,
+    // but inserting them into the stream equations makes the PH flash stiff
+    // when pressure and flow are solved simultaneously.
     m_compressorFormulaEnthalpyChange = compressorEnthalpyRise / kilopascalToPascal;
     m_turbineFormulaEnthalpyChange = -turbineEnthalpyDrop / kilopascalToPascal;
     m_compressorPower = positiveCompressorMassFlow *
-        std::max(0.0, m_compressorFormulaEnthalpyChange) * kilopascalToPascal;
+        std::max(0.0, m_compressorEnthalpyChange) * kilopascalToPascal;
     m_turbinePower = positiveTurbineMassFlow *
-        std::max(0.0, -m_turbineFormulaEnthalpyChange) * kilopascalToPascal;
+        std::max(0.0, -m_turbineEnthalpyChange) * kilopascalToPascal;
     // The shaft load must follow the actual gas work, not an independent N^2
     // curve. At standstill P / omega is singular; using the nominal angular
     // speed as a lower bound preserves a finite starting torque. Above the
@@ -231,28 +232,12 @@ gpaResult gpaTurboExpanderV2Element::calcEnthalpyFuncValueAt(gpaUInt circuit, gp
     const gpaMixPort* opposite = getMixPort(circuit, 1 - port);
     if (!opposite || !opposite->getStreamMedium() || circuit > turbineCircuit)
         return GPA_ERROR_WRONG_ARGS;
-    const gpaReal formulaEnthalpyChange = circuit == compressorCircuit
-        ? m_compressorFormulaEnthalpyChange : m_turbineFormulaEnthalpyChange;
-    const gpaReal massFlowRate = circuit == compressorCircuit
-        ? std::abs(m_compressorMassFlow) : std::abs(m_turbineMassFlow);
-    const gpaReal nominalMassFlowRate = circuit == compressorCircuit
-        ? m_nominalCompressorMassFlow : m_nominalTurbineMassFlow;
-    // A closed valve carries no energy with the gas.  Smoothly blend to
-    // h_out = h_in close to zero flow so a pressure-defined P-P circuit is
-    // well posed at start and stop.
-    const gpaReal flowCoordinate = std::clamp(
-        massFlowRate / std::max(1.0e-6, 0.01 * nominalMassFlowRate), 0.0, 1.0);
-    const gpaReal transportWeight = flowCoordinate * flowCoordinate * (3.0 - 2.0 * flowCoordinate);
-    const gpaReal massSpecificEnthalpyChange = transportWeight * formulaEnthalpyChange;
-    // The working values are mass-specific (kJ/kg), while stream properties
-    // are molar (kJ/kmol); convert exactly once using the current molar mass.
-    const gpaReal molarMass = opposite->getStreamMedium()->getMolarMass();
-    if (!std::isfinite(molarMass) || molarMass <= 0.0)
-        return GPA_ERROR_WRONG_ARGS;
-    const gpaReal molarEnthalpyChange = massSpecificEnthalpyChange * molarMass;
-    // Keep the same residual convention as CHE and the established TD
-    // element: h(port) - h(opposite) - DeltaH = 0.
-    value = enthalpy - opposite->getStreamMedium()->getEnthalpy() - molarEnthalpyChange;
+    const gpaReal passportEnthalpyChange = circuit == compressorCircuit
+        ? m_compressorEnthalpyChange : m_turbineEnthalpyChange;
+    // This follows the established P-P element convention in this library:
+    // the configured passport value is used directly in the stream residual.
+    // It remains bounded at a closed valve and avoids a PH flash excursion.
+    value = enthalpy - opposite->getStreamMedium()->getEnthalpy() - passportEnthalpyChange;
     return GPA_RESULT_OK;
 }
 
