@@ -38,6 +38,10 @@
     <sensor type="element" element="element" monitor="turbine-enthalpy-deviation" />
     <sensor type="element" element="element" monitor="compressor-formula-power" />
     <sensor type="element" element="element" monitor="turbine-formula-power" />
+    <sensor type="element" element="element" monitor="compressor-formula-heat-capacity" />
+    <sensor type="element" element="element" monitor="turbine-formula-heat-capacity" />
+    <sensor type="element" element="element" monitor="compressor-formula-heat-capacity-ratio" />
+    <sensor type="element" element="element" monitor="turbine-formula-heat-capacity-ratio" />
     <sensor type="element" element="element" monitor="compressor-power-to-nominal" />
     <sensor type="element" element="element" monitor="turbine-power-to-nominal" />
     <sensor type="element" element="element" monitor="compressor-inlet-enthalpy" />

@@ -13,6 +13,7 @@ constexpr gpaUInt turbineCircuit = 1;
 constexpr gpaUInt inletPort = 0;
 constexpr gpaUInt outletPort = 1;
 constexpr gpaReal kilopascalToPascal = 1000.0;
+constexpr gpaReal universalGasConstant = 8.314462618;
 constexpr gpaReal flowRegularization = 1.0e-6;
 
 enum class turboEquations : gpaUInt
@@ -37,6 +38,33 @@ enum class turboVariables : gpaUInt
 
 const gpaString typeName = "turbo-expander-v2";
 const gpaString description = "Турбодетандер с компрессором на общем валу";
+
+gpaReal getSpecificHeatCapacity(const gpaMixPort* port, gpaReal fallback)
+{
+    const gpaMedium* medium = port ? port->getStreamMedium() : nullptr;
+    if (!medium)
+        return fallback;
+    const gpaReal molarHeatCapacity = medium->getHeatCapacity();
+    const gpaReal molarMass = medium->getMolarMass();
+    const gpaReal specificHeatCapacity = molarHeatCapacity / molarMass;
+    return std::isfinite(specificHeatCapacity) && specificHeatCapacity > 0.0
+        ? specificHeatCapacity : fallback;
+}
+
+gpaReal getHeatCapacityRatio(const gpaMixPort* port, gpaReal fallback)
+{
+    const gpaMedium* medium = port ? port->getStreamMedium() : nullptr;
+    if (!medium)
+        return fallback;
+    const gpaReal molarHeatCapacity = medium->getHeatCapacity();
+    const gpaReal molarMass = medium->getMolarMass();
+    const gpaReal specificGasConstant = universalGasConstant / molarMass;
+    const gpaReal specificHeatCapacity = molarHeatCapacity / molarMass;
+    const gpaReal specificHeatCapacityAtConstantVolume =
+        specificHeatCapacity - specificGasConstant;
+    const gpaReal ratio = specificHeatCapacity / specificHeatCapacityAtConstantVolume;
+    return std::isfinite(ratio) && ratio > 1.0 ? ratio : fallback;
+}
 }
 
 gpaTurboExpanderV2Element::gpaTurboExpanderV2Element(const gpaParentLink* link) : gpaFlowElement(link)
@@ -171,16 +199,26 @@ gpaResult gpaTurboExpanderV2Element::calcFuncValues(const gpaConstVector&, const
         m_turbineStageInletPressure, m_turbineMassFlow, boundedTurbineFlow,
         nominalTurbineInletPressure, turbineMapCoefficient, speedRatio,
         m_turbineSpeedFactor);
+    m_turbineFormulaHeatCapacity = getSpecificHeatCapacity(
+        m_turbineInlet, m_turbineHeatCapacity);
+    m_turbineFormulaHeatCapacityRatio = getHeatCapacityRatio(
+        m_turbineInlet, m_turbineHeatCapacityRatio);
+    m_compressorFormulaHeatCapacity = getSpecificHeatCapacity(
+        m_compressorInlet, m_compressorHeatCapacity);
+    m_compressorFormulaHeatCapacityRatio = getHeatCapacityRatio(
+        m_compressorInlet, m_compressorHeatCapacityRatio);
+    const gpaReal turbineFormulaTemperature = m_turbineInlet->getStreamTemperature() > 0.0
+        ? m_turbineInlet->getStreamTemperature() : m_turbineTemperature;
     const gpaReal turbineIsentropicEnthalpyDrop = gpa::turboExpander::isentropicTurbineDrop(
         m_turbineStageInletPressure, m_turbineOutlet->getStreamPressure(),
-        m_turbineHeatCapacity * kilopascalToPascal, m_turbineTemperature,
-        m_turbineHeatCapacityRatio);
+        m_turbineFormulaHeatCapacity * kilopascalToPascal, turbineFormulaTemperature,
+        m_turbineFormulaHeatCapacityRatio);
     const gpaReal turbineEnthalpyDrop = turbineIsentropicEnthalpyDrop *
         std::clamp(m_turbineEfficiency, 0.0, 1.0);
     const gpaReal compressorIsentropicEnthalpyRise = gpa::turboExpander::isentropicCompressorRise(
         m_compressorInlet->getStreamPressure(), m_compressorDischargePressure,
-        m_compressorHeatCapacity * kilopascalToPascal,
-        m_compressorInlet->getStreamTemperature(), m_compressorHeatCapacityRatio);
+        m_compressorFormulaHeatCapacity * kilopascalToPascal,
+        m_compressorInlet->getStreamTemperature(), m_compressorFormulaHeatCapacityRatio);
     const gpaReal compressorEnthalpyRise = compressorIsentropicEnthalpyRise /
         std::max(1.0e-6, m_compressorEfficiency);
     const gpaReal positiveCompressorMassFlow = std::max(0.0, m_compressorMassFlow);

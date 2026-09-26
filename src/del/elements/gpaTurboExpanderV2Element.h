@@ -82,6 +82,10 @@ public:
     [[nodiscard]] gpaReal getTurbineFormulaEnthalpyChange() const { return m_turbineFormulaEnthalpyChange; }
     [[nodiscard]] gpaReal getCompressorFormulaPower() const { return m_compressorFormulaPower; }
     [[nodiscard]] gpaReal getTurbineFormulaPower() const { return m_turbineFormulaPower; }
+    [[nodiscard]] gpaReal getCompressorFormulaHeatCapacity() const { return m_compressorFormulaHeatCapacity; }
+    [[nodiscard]] gpaReal getTurbineFormulaHeatCapacity() const { return m_turbineFormulaHeatCapacity; }
+    [[nodiscard]] gpaReal getCompressorFormulaHeatCapacityRatio() const { return m_compressorFormulaHeatCapacityRatio; }
+    [[nodiscard]] gpaReal getTurbineFormulaHeatCapacityRatio() const { return m_turbineFormulaHeatCapacityRatio; }
     [[nodiscard]] gpaReal getCompressorNominalPower() const
     {
         return std::max(0.0, m_nominalCompressorMassFlow) *
@@ -170,6 +174,10 @@ private:
     gpaReal m_turbineFormulaEnthalpyChange{0.0};
     gpaReal m_compressorFormulaPower{0.0};
     gpaReal m_turbineFormulaPower{0.0};
+    gpaReal m_compressorFormulaHeatCapacity{0.0};
+    gpaReal m_turbineFormulaHeatCapacity{0.0};
+    gpaReal m_compressorFormulaHeatCapacityRatio{0.0};
+    gpaReal m_turbineFormulaHeatCapacityRatio{0.0};
 };
 
 #endif // GPA_TURBOEXPANDER_V2_ELEMENT_H
