@@ -1,0 +1,31 @@
+{
+  "Name": "turbo-expander-v2: пуск режима 100 с нулевой частоты, P-P",
+  "MaxTicks": 250,
+  "Submodels": [],
+  "Parameters": [
+    {
+      "Name": "turbine-valve-opening",
+      "Description": "Открытие клапана турбины",
+      "Unit": 1,
+      "UnitString": "",
+      "DataType": 3,
+      "IsVector": false,
+      "IsMixFractions": false,
+      "IsSignal": true,
+      "SelectedSignalColumn": "turbine-valve-opening",
+      "StringValue": "0",
+      "BoolValue": null,
+      "Value": 0,
+      "VectorAdditionalParam0": 1,
+      "VectorAdditionalParam1": 1,
+      "SizeType0": 1,
+      "SizeType1": 1,
+      "ColumnsCount": 0,
+      "VectorItems": null,
+      "SumValue": null
+    }
+  ],
+  "Contours": [],
+  "ExpectedResults": [],
+  "ExpectedResultTick": 250
+}

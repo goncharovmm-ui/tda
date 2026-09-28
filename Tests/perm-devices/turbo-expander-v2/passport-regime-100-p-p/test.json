@@ -1,0 +1,9 @@
+{
+  "Name": "turbo-expander-v2: паспортный режим 100, P-P",
+  "MaxTicks": 30,
+  "Submodels": [],
+  "Parameters": [],
+  "Contours": [],
+  "ExpectedResults": [],
+  "ExpectedResultTick": 30
+}
