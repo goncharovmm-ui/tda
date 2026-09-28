@@ -40,7 +40,7 @@ const gpaParameterInfoVector gpaTurboExpanderV2::m_parameters = {
  realParam("compressor-heat-capacity-ratio", "Показатель адиабаты компрессора", GPA_DIMLESS_UNIT, false, 1.376),
  realParam("compressor-efficiency", "Адиабатический КПД компрессора", GPA_DIMLESS_UNIT, false, 0.808),
  realParam("compressor-enthalpy-change", "Номинальный прирост энтальпии компрессора, кДж/кг", GPA_MASS_ENERGY_UNIT, false, 46.495702),
- realParam("turbine-enthalpy-change", "Номинальное изменение энтальпии детандера, кДж/кг", GPA_MASS_ENERGY_UNIT, false, -67.282212),
+ realParam("turbine-enthalpy-change", "Номинальное изменение энтальпии детандера, кДж/кг", GPA_MASS_ENERGY_UNIT, false, -67.280261976),
  realParam("turbine-speed-factor", "Поправка карты детандера по частоте", GPA_DIMLESS_UNIT, false, 0.10),
  realParam("nominal-shaft-torque", "Номинальный момент общего вала, Н м", GPA_DIMLESS_UNIT, false, 5800),
  realParam("bearing-loss-zeta", "Потери в подшипниках", GPA_DIMLESS_UNIT, false, 0.004),
